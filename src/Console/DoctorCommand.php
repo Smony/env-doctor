@@ -12,6 +12,9 @@ class DoctorCommand extends Command
 {
     protected static $defaultName = 'doctor:env';
 
+    protected $signature = 'doctor:env';
+    protected $description = 'Check .env for issues';
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $reader = new EnvReader();
