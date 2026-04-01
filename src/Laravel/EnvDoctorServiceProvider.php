@@ -3,7 +3,6 @@
 namespace Smony\EnvDoctor\Laravel;
 
 use Illuminate\Support\ServiceProvider;
-use Smony\EnvDoctor\Console\DoctorCommand;
 
 class EnvDoctorServiceProvider extends ServiceProvider
 {

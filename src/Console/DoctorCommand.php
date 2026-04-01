@@ -1,21 +1,17 @@
 <?php
 
-namespace Smony\EnvDoctor\Console;
+namespace Smony\EnvDoctor\Laravel;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Illuminate\Console\Command;
 use Smony\EnvDoctor\EnvReader;
 use Smony\EnvDoctor\EnvScanner;
 
 class DoctorCommand extends Command
 {
-    protected static $defaultName = 'doctor:env';
-
     protected $signature = 'doctor:env';
     protected $description = 'Check .env for issues';
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function handle(): int
     {
         $reader = new EnvReader();
         $scanner = new EnvScanner();
@@ -25,6 +21,7 @@ class DoctorCommand extends Command
 
         $missing = [];
         $unused = [];
+        $dangerous = [];
 
         foreach ($used as $key) {
             if (!isset($env[$key])) {
@@ -38,61 +35,54 @@ class DoctorCommand extends Command
             }
         }
 
-        $output->writeln('');
-        $output->writeln('<info>=== ENV DOCTOR REPORT ===</info>');
-        $output->writeln('');
+        if (
+            isset($env['APP_ENV']) &&
+            strtolower($env['APP_ENV']) === 'production' &&
+            isset($env['APP_DEBUG']) &&
+            in_array(strtolower($env['APP_DEBUG']), ['true', '1'])
+        ) {
+            $dangerous[] = 'APP_DEBUG=true in production';
+        }
+
+        $this->newLine();
+        $this->info('=== ENV DOCTOR REPORT ===');
+        $this->newLine();
 
         if (!empty($missing)) {
-            $output->writeln('<error>❌ Missing:</error>');
+            $this->error('❌ Missing:');
             foreach ($missing as $key) {
-                $output->writeln("  - $key");
+                $this->line("  - $key");
             }
-            $output->writeln('');
+            $this->newLine();
         }
 
         if (!empty($unused)) {
-            $output->writeln('<comment>⚠️ Unused:</comment>');
+            $this->warn('⚠️ Unused:');
             foreach ($unused as $key) {
-                $output->writeln("  - $key");
+                $this->line("  - $key");
             }
-            $output->writeln('');
-        }
-
-        if (empty($missing) && empty($unused)) {
-            $output->writeln('<info>✅ Everything looks good!</info>');
-        }
-
-        $dangerous = [];
-
-        if (
-            isset($env['APP_ENV']) &&
-            strtolower($env['APP_ENV']) === 'production'
-        ) {
-            if (
-                isset($env['APP_DEBUG']) &&
-                in_array(strtolower($env['APP_DEBUG']), ['true', '1'])
-            ) {
-                $dangerous[] = 'APP_DEBUG=true in production';
-            }
+            $this->newLine();
         }
 
         if (!empty($dangerous)) {
-            $output->writeln('<error>🚨 Dangerous:</error>');
+            $this->error('🚨 Dangerous:');
             foreach ($dangerous as $item) {
-                $output->writeln("  - $item");
+                $this->line("  - $item");
             }
-            $output->writeln('');
+            $this->newLine();
         }
 
-        // 📊 Summary
-        $output->writeln('<info>Summary:</info>');
-        $output->writeln('  Missing: ' . count($missing));
-        $output->writeln('  Unused: ' . count($unused));
-        $output->writeln('  Dangerous: ' . count($dangerous));
-        $output->writeln('');
+        if (empty($missing) && empty($unused) && empty($dangerous)) {
+            $this->info('✅ Everything looks good!');
+            $this->newLine();
+        }
 
-        return empty($missing) && empty($dangerous)
-            ? Command::SUCCESS
-            : Command::FAILURE;
+        $this->info('Summary:');
+        $this->line('  Missing: ' . count($missing));
+        $this->line('  Unused: ' . count($unused));
+        $this->line('  Dangerous: ' . count($dangerous));
+        $this->newLine();
+
+        return empty($missing) && empty($dangerous) ? 0 : 1;
     }
 }

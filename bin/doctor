@@ -3,13 +3,15 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Smony\EnvDoctor\Console\DoctorCommand;
+use Smony\EnvDoctor\Console\CliDoctorCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-$command = new DoctorCommand();
+$command = new CliDoctorCommand();
 
 $input = new ArgvInput();
 $output = new ConsoleOutput();
 
 $command->run($input, $output);
+
+
