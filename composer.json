@@ -1,0 +1,39 @@
+{
+    "name": "smony/env-doctor",
+    "description": "Simple CLI tool to detect .env issues in PHP projects",
+    "type": "library",
+    "license": "MIT",
+
+    "keywords": [
+        "env",
+        "cli",
+        "laravel",
+        "config",
+        "debug",
+        "dev-tools"
+    ],
+
+    "authors": [
+        {
+            "name": "Smony"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "Smony\\EnvDoctor\\": "src/"
+        }
+    },
+
+    "require": {
+        "php": ">=8.1",
+        "symfony/console": "^8.0"
+    },
+
+    "bin": [
+        "bin/doctor"
+    ],
+
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

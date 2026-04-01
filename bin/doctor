@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Smony\EnvDoctor\Console\DoctorCommand;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+$command = new DoctorCommand();
+
+$input = new ArgvInput();
+$output = new ConsoleOutput();
+
+$command->run($input, $output);
