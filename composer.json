@@ -30,6 +30,14 @@
         "symfony/console": "^8.0"
     },
 
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Smony\\EnvDoctor\\Laravel\\EnvDoctorServiceProvider"
+            ]
+        }
+    },
+
     "bin": [
         "bin/doctor"
     ],
